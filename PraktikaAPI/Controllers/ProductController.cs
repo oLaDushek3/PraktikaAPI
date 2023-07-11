@@ -29,6 +29,21 @@ namespace PraktikaAPI.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpGet]
+        [Route("api/[controller]/GetPriceCategories")]
+        public IActionResult GetPriceCategories()
+        {
+            try
+            {
+                IEnumerable<PriceCategory> data = _productRepository.GetPriceCategories();
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         // GET api/<ProductController>/5
         [HttpGet]
@@ -62,6 +77,20 @@ namespace PraktikaAPI.Controllers
                 return BadRequest(ex);
             }
         }
+        [HttpPost]
+        [Route("api/[controller]/InsertProductPriceCategory")]
+        public IActionResult InsertProductPriceCategory([FromBody] ProductPriceCategory model)
+        {
+            try
+            {
+                _productRepository.InsertProductPriceCategory(model);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
 
         // PUT api/<ProductController>/5
         [HttpPut]
@@ -87,6 +116,20 @@ namespace PraktikaAPI.Controllers
             try
             {
                 _productRepository.DeleteProduct(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+        [HttpDelete]
+        [Route("api/[controller]/DeleteProductPriceCategory/{id}")]
+        public IActionResult DeleteProductPriceCategory(int id)
+        {
+            try
+            {
+                _productRepository.DeleteProductPriceCategory(id);
                 return Ok();
             }
             catch (Exception ex)

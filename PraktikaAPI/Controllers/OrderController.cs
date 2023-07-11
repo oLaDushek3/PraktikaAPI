@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using NLog;
 using PraktikaAPI.DAL;
 using PraktikaAPI.Models;
 
@@ -6,6 +7,7 @@ namespace PraktikaAPI.Controllers
 {
     public class OrderController : Controller
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private IOrderRepository _OrderRepository;
 
         public OrderController(PraktikaDbContext praktikaDbContext)
@@ -49,12 +51,13 @@ namespace PraktikaAPI.Controllers
 
         // POST api/<OrderController>
         [HttpPost]
-        [Route("api/[controller]/InsertOrder")]
-        public IActionResult Post([FromBody] Order model)
+        [Route("api/[controller]/InsertOrder/{userId}")]
+        public IActionResult Post([FromBody] Order model, int userId)
         {
             try
             {
                 _OrderRepository.InsertOrder(model);
+                logger.Info($"Создание заказа: Пользователь: {userId}; OrderId: {model.OrderId}; BuyerId: {model.BuyerId}; Date: {model.Date}; Amount: {model.Amount};  Delivery: {model.Delivery};  Assembly: {model.Assembly};");
                 return Ok();
             }
             catch (Exception ex)
@@ -65,12 +68,13 @@ namespace PraktikaAPI.Controllers
 
         // PUT api/<OrderController>/5
         [HttpPut]
-        [Route("api/[controller]/UpdateOrder")]
-        public IActionResult Put([FromBody] Order model)
+        [Route("api/[controller]/UpdateOrder/{userId}")]
+        public IActionResult Put([FromBody] Order model, int userId)
         {
             try
             {
                 _OrderRepository.UpdateOrder(model);
+                logger.Info($"Обновление заказа: Пользователь: {userId}; OrderId: {model.OrderId}; BuyerId: {model.BuyerId}; Date: {model.Date}; Amount: {model.Amount};  Delivery: {model.Delivery};  Assembly: {model.Assembly};");
                 return Ok();
             }
             catch (Exception ex)
@@ -81,12 +85,13 @@ namespace PraktikaAPI.Controllers
 
         // DELETE api/<OrderController>/5
         [HttpDelete]
-        [Route("api/[controller]/DeleteOrder/{id}")]
-        public IActionResult Delete(int id)
+        [Route("api/[controller]/DeleteOrder/{id}/{userId}")]
+        public IActionResult Delete(int id, int userId)
         {
             try
             {
                 _OrderRepository.DeleteOrder(id);
+                logger.Info($"Удаление заказа: Пользователь: {userId}; OrderId: {id}");
                 return Ok();
             }
             catch (Exception ex)

@@ -7,6 +7,7 @@ namespace PraktikaAPI.DAL
         IEnumerable<Employee> GetEmployees();
         Employee? GetEmployeeByID(int employeeId);
         Employee? GetEmployeeByLogin(string employeeLogin);
+        IEnumerable<Role> GetRoles();
         void InsertEmployee(Employee employee);
         void DeleteEmployee(int employeeId);
         void UpdateEmployee(Employee employee);

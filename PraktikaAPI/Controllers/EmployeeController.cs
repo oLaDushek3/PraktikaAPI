@@ -1,12 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Fluent;
 using PraktikaAPI.DAL;
 using PraktikaAPI.Models;
+using System.IO;
+using System.Reflection;
 
 namespace PraktikaAPI.Controllers
 {
     public class EmployeeController : Controller
     {
+        private static Logger logger = LogManager.GetCurrentClassLogger();
         private readonly IConfiguration _config;
         private readonly IEmployeeRepository _employeeRepository;
 
@@ -67,10 +72,27 @@ namespace PraktikaAPI.Controllers
             }
         }
 
+        // GET api/<EmployeeController>/role
+        [HttpGet]
+        [Route("api/[controller]/GetRoles")]
+        public IActionResult GetRoles()
+        {
+            try
+            {
+                IEnumerable<Role> data = _employeeRepository.GetRoles();
+
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
         // POST api/<EmployeeController>
         [HttpPost]
-        [Route("api/[controller]/InsertEmployee")]
-        public IActionResult Post([FromBody] Employee model)
+        [Route("api/[controller]/InsertEmployee/{userId}")]
+        public IActionResult Post([FromBody] Employee model, int userId)
         {
             try
             {
@@ -78,6 +100,7 @@ namespace PraktikaAPI.Controllers
                 if (employee == null)
                 {
                     _employeeRepository.InsertEmployee(model);
+                    logger.Info($"Создание сотрудника: Пользователь: {userId}; EmployeeId: {model.EmployeeId}; Login: {model.Login}; FullName: {model.FullName}");
                     return Ok();
                 }
                 else
@@ -91,12 +114,13 @@ namespace PraktikaAPI.Controllers
 
         // PUT api/<EmployeeController>/5
         [HttpPut]
-        [Route("api/[controller]/UpdateEmployee")]
-        public IActionResult Put([FromBody] Employee model)
+        [Route("api/[controller]/UpdateEmployee/{userId}")]
+        public IActionResult Put([FromBody] Employee model, int userId)
         {
             try
             {
                 _employeeRepository.UpdateEmployee(model);
+                logger.Info($"Обновление сотрудника: Пользователь: {userId}; EmployeeId: {model.EmployeeId}; Login: {model.Login}; FullName: {model.FullName}");
                 return Ok();
             }
             catch (Exception ex)
@@ -107,12 +131,13 @@ namespace PraktikaAPI.Controllers
 
         // DELETE api/<EmployeeController>/5
         [HttpDelete]
-        [Route("api/[controller]/DeleteEmployee/{id}")]
-        public IActionResult Delete(int id)
+        [Route("api/[controller]/DeleteEmployee/{id}/{userId}")]
+        public IActionResult Delete(int id, int userId)
         {
             try
             {
                 _employeeRepository.DeleteEmployee(id);
+                logger.Info($"Удаление сотрудника: Пользователь: {userId}; EmployeeId: {id}");
                 return Ok();
             }
             catch (Exception ex)
@@ -127,13 +152,15 @@ namespace PraktikaAPI.Controllers
         {
             try
             {
+                logger.Info($"Попытка авторизации: Логин: {login}; Пароль: {password}");
+
                 Employee? loginEmployee = _employeeRepository.GetEmployeeByLogin(login);
                 if (loginEmployee == null)
                     return Unauthorized("Invalid login");
                 else
                 {
                     if (_employeeRepository.LoginEmployee(loginEmployee, password))
-                        return Ok();
+                        return Ok(loginEmployee);
                     else
                         return Unauthorized("Invalid password");
                 }

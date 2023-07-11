@@ -22,9 +22,6 @@ namespace PraktikaAPI.DAL
                         ThenInclude(p => p.ProductGroup).
                 Include(c => c.Products).
                     ThenInclude(p => p.SupplyProducts).
-                        ThenInclude(p => p.Orders).
-                Include(c => c.Products).
-                    ThenInclude(p => p.SupplyProducts).
                         ThenInclude(p => p.Supply).ToList();
         }
 
@@ -36,9 +33,6 @@ namespace PraktikaAPI.DAL
                 Include(c => c.Products).
                     ThenInclude(p => p.ProductType).
                         ThenInclude(p => p.ProductGroup).
-                Include(c => c.Products).
-                    ThenInclude(p => p.SupplyProducts).
-                        ThenInclude(p => p.Orders).
                 Include(c => c.Products).
                     ThenInclude(p => p.SupplyProducts).
                         ThenInclude(p => p.Supply).FirstOrDefault(c => c.ColorId == colorId);
@@ -58,9 +52,6 @@ namespace PraktikaAPI.DAL
                 Include(c => c.Products).
                     ThenInclude(p => p.ProductType).
                         ThenInclude(p => p.ProductGroup).
-                Include(c => c.Products).
-                    ThenInclude(p => p.SupplyProducts).
-                        ThenInclude(p => p.Orders).
                 Include(c => c.Products).
                     ThenInclude(p => p.SupplyProducts).
                         ThenInclude(p => p.Supply).FirstOrDefault(c => c.ColorId == colorId);

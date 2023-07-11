@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using PraktikaAPI.Models;
 
-namespace PraktikaAPI.DAL;
+namespace PraktikaAPI.Models;
 
 public partial class PraktikaDbContext : DbContext
 {
@@ -58,18 +57,22 @@ public partial class PraktikaDbContext : DbContext
 
             entity.ToTable("Buyer");
 
+            entity.HasIndex(e => e.IndividualId, "Buyer_individualid_key").IsUnique();
+
+            entity.HasIndex(e => e.LegalEntityId, "Buyer_legalentityid_key").IsUnique();
+
             entity.Property(e => e.BuyerId).UseIdentityAlwaysColumn();
             entity.Property(e => e.Address).HasMaxLength(100);
 
-            entity.HasOne(d => d.Individual).WithMany(p => p.Buyers)
-                .HasForeignKey(d => d.IndividualId)
+            entity.HasOne(d => d.Individual).WithOne(p => p.Buyer)
+                .HasForeignKey<Buyer>(d => d.IndividualId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("Buyer_IndividualId_fkey");
+                .HasConstraintName("Buyer_individualid_fkey");
 
-            entity.HasOne(d => d.LegalEntity).WithMany(p => p.Buyers)
-                .HasForeignKey(d => d.LegalEntityId)
+            entity.HasOne(d => d.LegalEntity).WithOne(p => p.Buyer)
+                .HasForeignKey<Buyer>(d => d.LegalEntityId)
                 .OnDelete(DeleteBehavior.Cascade)
-                .HasConstraintName("Buyer_LegalEntityId_fkey");
+                .HasConstraintName("Buyer_legalentityid_fkey");
         });
 
         modelBuilder.Entity<Color>(entity =>
@@ -89,8 +92,9 @@ public partial class PraktikaDbContext : DbContext
             entity.ToTable("Employee");
 
             entity.Property(e => e.EmployeeId).UseIdentityAlwaysColumn();
+            entity.Property(e => e.FullName).HasMaxLength(50);
             entity.Property(e => e.Login).HasMaxLength(50);
-            entity.Property(e => e.Password).HasMaxLength(100);
+            entity.Property(e => e.Password).HasMaxLength(300);
 
             entity.HasOne(d => d.Role).WithMany(p => p.Employees)
                 .HasForeignKey(d => d.RoleId)
@@ -106,9 +110,9 @@ public partial class PraktikaDbContext : DbContext
             entity.HasIndex(e => e.SeriesPassportNumber, "Individual_SeriesPassportNumber_key").IsUnique();
 
             entity.Property(e => e.IndividualId).UseIdentityAlwaysColumn();
-            entity.Property(e => e.FullName).HasMaxLength(50);
-            entity.Property(e => e.Phone).HasMaxLength(12);
-            entity.Property(e => e.SeriesPassportNumber).HasMaxLength(12);
+            entity.Property(e => e.FullName).HasMaxLength(300);
+            entity.Property(e => e.Phone).HasMaxLength(300);
+            entity.Property(e => e.SeriesPassportNumber).HasMaxLength(300);
         });
 
         modelBuilder.Entity<LegalEntity>(entity =>
@@ -118,19 +122,19 @@ public partial class PraktikaDbContext : DbContext
             entity.ToTable("LegalEntity");
 
             entity.Property(e => e.LegalEntityId).UseIdentityAlwaysColumn();
-            entity.Property(e => e.Bank).HasMaxLength(50);
+            entity.Property(e => e.Bank).HasMaxLength(300);
             entity.Property(e => e.Bic)
-                .HasMaxLength(9)
+                .HasMaxLength(300)
                 .HasColumnName("BIC");
-            entity.Property(e => e.CheckingAccount).HasMaxLength(20);
-            entity.Property(e => e.CorrespondentAccount).HasMaxLength(20);
-            entity.Property(e => e.Organization).HasMaxLength(50);
-            entity.Property(e => e.Phone).HasMaxLength(12);
+            entity.Property(e => e.CheckingAccount).HasMaxLength(300);
+            entity.Property(e => e.CorrespondentAccount).HasMaxLength(300);
+            entity.Property(e => e.Organization).HasMaxLength(300);
+            entity.Property(e => e.Phone).HasMaxLength(300);
             entity.Property(e => e.Rrc)
-                .HasMaxLength(9)
+                .HasMaxLength(300)
                 .HasColumnName("RRC");
             entity.Property(e => e.Tin)
-                .HasMaxLength(10)
+                .HasMaxLength(300)
                 .HasColumnName("TIN");
         });
 
@@ -262,6 +266,7 @@ public partial class PraktikaDbContext : DbContext
             entity.HasKey(e => e.SupplyProductsId).HasName("SupplyProducts_pkey");
 
             entity.Property(e => e.SupplyProductsId).UseIdentityAlwaysColumn();
+            entity.Property(e => e.Status).HasMaxLength(30);
 
             entity.HasOne(d => d.Product).WithMany(p => p.SupplyProducts)
                 .HasForeignKey(d => d.ProductId)
@@ -270,6 +275,11 @@ public partial class PraktikaDbContext : DbContext
             entity.HasOne(d => d.Supply).WithMany(p => p.SupplyProducts)
                 .HasForeignKey(d => d.SupplyId)
                 .HasConstraintName("SupplyProducts_SupplyId_fkey");
+
+            entity.HasOne(d => d.Textile).WithMany(p => p.SupplyProducts)
+                .HasForeignKey(d => d.TextileId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("SupplyProducts_TextileId_fkey");
         });
 
         modelBuilder.Entity<Textile>(entity =>

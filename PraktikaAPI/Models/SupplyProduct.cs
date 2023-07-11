@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace PraktikaAPI.Models;
 
@@ -11,9 +12,17 @@ public partial class SupplyProduct
 
     public int ProductId { get; set; }
 
+    public string? Status { get; set; }
+
+    public string? ListStatus { internal  get; set; }
+
+    public int? TextileId { get; set; }
+
     public virtual Product Product { get; set; } = null!;
 
     public virtual Supply Supply { get; set; } = null!;
 
-    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+    public virtual Textile? Textile { get; set; }
+
+    public virtual List<Order> Orders { get; set; } = new List<Order>();
 }

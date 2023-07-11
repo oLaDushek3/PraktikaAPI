@@ -14,8 +14,8 @@ namespace PraktikaAPI.DAL
 
         public IEnumerable<Employee> GetEmployees()
         {
-            List<Employee> list = new List<Employee>();
-            list = _context.Employees.
+            List<Employee> list = _context.Employees.
+                Include(b => b.Role).
                 Include(b => b.Orders).ToList();
             return list;
         }
@@ -23,12 +23,19 @@ namespace PraktikaAPI.DAL
         public Employee? GetEmployeeByID(int employeeId)
         {
             return _context.Employees.
+                Include(b => b.Role).
                 Include(b => b.Orders).FirstOrDefault(b => b.EmployeeId == employeeId);
         }
+
         public Employee? GetEmployeeByLogin(string employeeLogin)
         {
             return _context.Employees.
-                Include(b => b.Orders).FirstOrDefault(b => b.Login == employeeLogin);
+                Include(e => e.Role).FirstOrDefault(b => b.Login == employeeLogin);
+        }
+
+        public IEnumerable<Role> GetRoles()
+        {
+            return _context.Roles.ToList();
         }
 
         public void InsertEmployee(Employee employee)
@@ -52,6 +59,7 @@ namespace PraktikaAPI.DAL
 
         public void UpdateEmployee(Employee employee)
         {
+            employee.Password = EncryptionPassword.HashPassword(employee.Password);
             _context.Entry(employee).State = EntityState.Modified;
             _context.SaveChanges();
         }

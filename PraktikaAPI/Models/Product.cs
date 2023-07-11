@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PraktikaAPI.Models;
+﻿namespace PraktikaAPI.Models;
 
 public partial class Product
 {

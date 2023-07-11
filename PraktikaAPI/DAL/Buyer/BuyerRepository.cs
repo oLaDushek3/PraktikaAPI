@@ -59,6 +59,10 @@ namespace PraktikaAPI.DAL
 
             if (buyer != null)
             {
+                if(buyer.Individual != null)
+                    _context.Individuals.Remove(buyer.Individual);
+                else
+                    _context.LegalEntities.Remove(buyer.LegalEntity);
                 _context.Buyers.Remove(buyer);
                 _context.SaveChanges();
             }
@@ -66,7 +70,14 @@ namespace PraktikaAPI.DAL
 
         public void UpdateBuyer(Buyer buyer)
         {
-            _context.Entry(BuyerEncryption.Encrypt(buyer)).State = EntityState.Modified;
+            buyer = BuyerEncryption.Encrypt(buyer);
+
+            if (buyer.Individual != null)
+                _context.Entry(buyer.Individual).State = EntityState.Modified;
+            else
+                _context.Entry(buyer.LegalEntity).State = EntityState.Modified;
+
+            _context.Entry(buyer).State = EntityState.Modified;
             _context.SaveChanges();
         }
     }

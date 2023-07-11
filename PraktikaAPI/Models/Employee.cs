@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace PraktikaAPI.Models;
+﻿namespace PraktikaAPI.Models;
 
 public partial class Employee
 {
@@ -10,6 +7,8 @@ public partial class Employee
     public string Login { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    public string FullName { get; set; } = null!;
 
     public int RoleId { get; set; }
 
